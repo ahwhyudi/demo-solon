@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(RolePermissionSeeder::class);
-        // $this->call([
-        //     ProvinsiSeeder::class,
-        //     KotaSeeder::class,
-        //     KecamatanSeeder::class,
-        //     DesaSeeder::class
-        // ]);
+        $this->call([
+            ProvinsiSeeder::class,
+            KotaSeeder::class,
+            KecamatanSeeder::class,
+            DesaSeeder::class
+        ]);
         // $this->call(DivisiSeeder::class);
         // $banks = [
         //     'BNI',

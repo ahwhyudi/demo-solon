@@ -58,13 +58,14 @@ class DashboardController extends Controller
         // $berkasFreeze = 0;
 
         $berkasFreeze = ApprovalFreez::query()
-            ->whereIn("job_divisi", $jobDivisi->pluck("id")->toArray())
+            // ->whereIn("job_divisi", $jobDivisi->pluck("id")->toArray())
             ->where('status', 'Disetujui')
             ->where(function ($query) {
                 $query->whereNull("end_date")
                     ->orWhere("end_date", ">", now());
             })
             ->count();
+            // dd($berkasFreeze);
 
         foreach ($jobDivisi as $job) {
 
@@ -76,7 +77,7 @@ class DashboardController extends Controller
 
                 $berkasSelesai++;
                 // dd($berkasSelesai);
-            } elseif (in_array($statusType, ['Pra Akad', 'Akad',"Batal Akad"])) {
+            } elseif (in_array($statusType, ['Pra Akad', 'Akad'])) {
 
                 $berkasBerjalan++;
             }

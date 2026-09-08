@@ -393,17 +393,6 @@
                                 <label class="form-label required">Harga Limit</label>
                                 <input type="text" class="form-control money" name="harga_limit[]">
                             </div>
-
-                            <div class="col-md-2">
-                                <label class="form-label required">Harga Jual</label>
-                                <input type="text" class="form-control money" name="harga_jual[]">
-                            </div>
-
-                            <div class="col-md-2">
-                                <label class="form-label required">Harga Proses</label>
-                                <input type="text" class="form-control money" name="harga_proses[]">
-                            </div>
-
                             <div class="col-md-2">
                                 <label class="form-label required">Lama Pengerjaan</label>
                                 <input type="text" class="form-control" name="lama_pengerjaan[]">
