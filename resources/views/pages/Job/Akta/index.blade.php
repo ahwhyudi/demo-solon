@@ -97,8 +97,8 @@
                             <th class="py-3 freeze-proses text-secondary text-uppercase font-monospace small fw-bold">Proses</th>
                             <th class="py-3 freeze-nomor-akta text-secondary text-uppercase font-monospace small fw-bold">Nomor Akta</th>
                             <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Status</th>
-                            <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Penugasan</th>
-                            <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Penugasan QC</th>
+                            <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Petugasan</th>
+                            {{-- <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Penugasan QC</th> --}}
                             <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Nomor Objek</th>
                             <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Nama Debitur</th>
                             <th class="py-3 text-secondary text-uppercase font-monospace small fw-bold">Nama Bank</th>
@@ -159,11 +159,11 @@
                                 </td>
 
                                 {{-- Penugasan QC --}}
-                                <td>
+                                {{-- <td>
                                     <span class="text-secondary">
                                         {{ $item->statusJobOps->last()->nextUser->name ?? 'Belum diproses' }}
                                     </span>
-                                </td>
+                                </td> --}}
 
                                 {{-- Nomor Objek --}}
                                 <td>

@@ -138,16 +138,6 @@ Route::middleware('auth')->group(function () {
             Route::post('divisi/{id}/assign', [JobDivisiController::class, 'assignJob'])
                 ->name('divisi.assign');
 
-            // Route::get(
-            //     "divisi-data-pendukung/{id}/edit",
-            //     [DataPendukunJobDivisiController::class, 'editDebitur']
-            // )->name("divisi-data-pendukung.edit");
-
-            // Route::post(
-            //     "divisi-data-pendukung/update",
-            //     [DataPendukunJobDivisiController::class, 'update']
-            // )->name("divisi-data-pendukung.update");
-
             Route::get(
                 'divisi-data-pendukung-debitur/{id}/edit',
                 [DataPendukunJobDivisiController::class, 'editDebitur']
