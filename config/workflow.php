@@ -25,11 +25,11 @@ return [
                 ],
                 ['name' => 'Draft'],
 
-                [
-                    'name' => 'Penugasan Renvoi Minuta Akta',
-                    'penugasan' => true,
-                ],
-                ['name' => 'Renvoi Minuta Akta'],
+                // [
+                //     'name' => 'Penugasan Renvoi Minuta Akta',
+                //     'penugasan' => true,
+                // ],
+                // ['name' => 'Renvoi Minuta Akta'],
 
                 [
                     'name' => 'Penugasan Salinan',
