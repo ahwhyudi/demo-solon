@@ -117,7 +117,7 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-secondary border">
-                                        
+
                                         {{ $item->tanggal_estimasi_selesai_eksternal ?: '-' }}
                                     </span>
                                 </td>
@@ -134,7 +134,7 @@
                                                 <path
                                                     d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
                                             </svg>
-                                            <span>Detail</span>
+                                            {{-- <span>Detail</span> --}}
                                         </a>
 
                                         {{-- Tombol Export PDF --}}
@@ -143,6 +143,12 @@
                                             title="Export Quotation PDF" target="_blank">
                                             <i class="bi bi-file-earmark-pdf fs-6"></i>
                                             <span>PDF</span>
+                                        </a>
+                                        <a href="#"
+                                            class="btn btn-danger d-inline-flex align-items-center gap-1 px-3 py-1.5 shadow-sm fw-medium"
+                                            title="Export Quotation PDF" target="_blank">
+                                            <i class="bi bi-trash-fill"></i>
+                                            {{-- <span>Hapus</span> --}}
                                         </a>
                                     </div>
                                 </td>

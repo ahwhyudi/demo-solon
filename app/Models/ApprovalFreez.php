@@ -15,6 +15,10 @@ class ApprovalFreez extends Model
 
     public function jobDivisi()
     {
-        return $this->belongsTo(JobDivisi::class, "job_divisi", "id")->withTrashed();
+        return $this->belongsTo(
+            JobDivisi::class,
+            "job_divisi",
+            "id"
+        )->withTrashed();
     }
 }

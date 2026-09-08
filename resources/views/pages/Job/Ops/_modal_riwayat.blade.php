@@ -1,5 +1,5 @@
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-secondary " data-bs-toggle="modal"
+<button type="button" class="btn btn-outline-secondary " data-bs-toggle="modal"
     data-bs-target="#statusRiwayatprsoes{{ $key }}">
     Riwayat
 </button>

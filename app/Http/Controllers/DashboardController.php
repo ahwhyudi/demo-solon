@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApprovalFreez;
 use App\Models\Cuti;
 use App\Models\JobDivisi;
 use App\Models\JobDivisiFormOrder;
 use App\Models\Lembur;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
@@ -24,15 +25,17 @@ class DashboardController extends Controller
             $completionGroupBy = 'perusahaan';
         }
 
-        $now = Carbon::now();
-        [$start_date, $end_date] = match ($groupBy) {
-            'week' => [$now->copy()->startOfWeek()->startOfDay(), $now->copy()->endOfWeek()->endOfDay()],
-            'month' => [$now->copy()->startOfMonth()->startOfDay(), $now->copy()->endOfMonth()->endOfDay()],
-            default => [$now->copy()->startOfDay(), $now->copy()->endOfDay()],
-        };
+        // Ambil filter bulan dari request (format: "YYYY-MM"), default bulan saat ini
+        $filterMonth = $request->get('filter_month', date('Y-m'));
+        $start_date = Carbon::createFromFormat('Y-m', $filterMonth)->startOfMonth()->startOfDay();
+        $end_date = Carbon::createFromFormat('Y-m', $filterMonth)->endOfMonth()->endOfDay();
 
+        // 1. Berkas Masuk dihitung berdasarkan created_at dalam rentang bulan tersebut
+        $berkasMasukCount = JobDivisi::query()
+            ->count();
+
+        // 2. Data utama & laporan status lainnya dihitung berdasarkan updated_at dalam rentang bulan tersebut
         $jobDivisi = JobDivisi::query()
-            ->withTrashed()
             ->with([
                 'formOrder',
                 'developer.developer',
@@ -40,157 +43,71 @@ class DashboardController extends Controller
                 'pembuat',
                 'freeze',
             ])
-            ->whereBetween('created_at', [$start_date, $end_date])
             ->get();
+        // dd($jobDivisi);
 
         $formOrder = JobDivisiFormOrder::query()
-            ->with(['jobDivisi' => fn ($query) => $query->withTrashed(), 'statusJobOps', 'pnbp'])
+            ->with(['jobDivisi' => fn($query) => $query->withTrashed(), 'statusJobOps', 'pnbp'])
             ->whereIn("job_divisi_id", $jobDivisi->pluck("id")->toArray())
             ->get();
 
-        $cuti = Cuti::with('user')
-            ->whereBetween('created_at', [$start_date, $end_date])
-            ->get();
+        // Inisialisasi penghitungan status laporan
+        $berkasBerjalan = 0;
+        $berkasSelesai = 0;
+        $berkasPending = 0;
+        // $berkasFreeze = 0;
 
-        $lembur = Lembur::with('user')
-            ->whereBetween('created_at', [$start_date, $end_date])
-            ->get();
-
-        $summary = [
-            'job_divisi' => $jobDivisi->count(),
-            'pekerjaan' => $formOrder->count(),
-            'pendapatan' => $formOrder->sum(fn ($item) => (float) ($item->harga_proses ?? 0)),
-            'modal' => $formOrder->sum(fn ($item) => (float) ($item->harga_modal ?? 0)),
-            'profit' => $formOrder->sum(fn ($item) => (float) ($item->harga_proses ?? 0) - (float) ($item->harga_modal ?? 0)),
-            'selesai' => $jobDivisi->filter(fn ($job) => $this->resolveCompletionStatus($job) === 'selesai')->count(),
-            'belum_selesai' => $jobDivisi->filter(fn ($job) => $this->resolveCompletionStatus($job) === 'belum_selesai')->count(),
-            'pending' => $jobDivisi->filter(fn ($job) => $this->resolveCompletionStatus($job) === 'pending')->count(),
-            'freeze' => $jobDivisi->filter(fn ($job) => $this->resolveCompletionStatus($job) === 'freeze')->count(),
-            'hris' => $cuti->count() + $lembur->count(),
-        ];
-
-        $trendBuckets = $this->initializeBuckets($start_date, $end_date, $groupBy);
+        $berkasFreeze = ApprovalFreez::query()
+            ->whereIn("job_divisi", $jobDivisi->pluck("id")->toArray())
+            ->where('status', 'Disetujui')
+            ->where(function ($query) {
+                $query->whereNull("end_date")
+                    ->orWhere("end_date", ">", now());
+            })
+            ->count();
 
         foreach ($jobDivisi as $job) {
-            $bucket = $this->bucketKey(Carbon::parse($job->created_at), $groupBy);
 
-            if (!isset($trendBuckets[$bucket])) {
-                continue;
+            $statusType = $job->status;
+
+            if ($statusType === 'Pending') {
+                $berkasPending++;
+            } elseif ($statusType === 'Selesai') {
+
+                $berkasSelesai++;
+                // dd($berkasSelesai);
+            } elseif (in_array($statusType, ['Pra Akad', 'Akad',"Batal Akad"])) {
+
+                $berkasBerjalan++;
             }
-
-            $status = $this->resolveCompletionStatus($job);
-            $trendBuckets[$bucket][$status] += 1;
         }
 
-        foreach ($formOrder as $item) {
-            $bucket = $this->bucketKey(Carbon::parse($item->created_at), $groupBy);
-
-            if (!isset($trendBuckets[$bucket])) {
-                continue;
-            }
-
-            $pendapatan = (float) ($item->harga_proses ?? 0);
-            $modal = (float) ($item->harga_modal ?? 0);
-
-            $trendBuckets[$bucket]['pendapatan'] += $pendapatan;
-            $trendBuckets[$bucket]['profit'] += $pendapatan - $modal;
-        }
-
-        $hrisStatus = [
-            'pending' => 0,
-            'approved' => 0,
-            'rejected' => 0,
+        $summary = [
+            'berkas_masuk' => $berkasMasukCount,
+            'berkas_berjalan' => $berkasBerjalan,
+            'berkas_selesai' => $berkasSelesai,
+            'berkas_pending' => $berkasPending,
+            'berkas_freeze' => $berkasFreeze,
+            'pekerjaan' => $formOrder->count(),
+            'pendapatan' => $formOrder->sum(fn($item) => (float) ($item->harga_proses ?? 0)),
+            'modal' => $formOrder->sum(fn($item) => (float) ($item->harga_modal ?? 0)),
+            'profit' => $formOrder->sum(fn($item) => (float) ($item->harga_proses ?? 0) - (float) ($item->harga_modal ?? 0)),
         ];
-
-        foreach ($cuti as $item) {
-            $status = strtolower((string) ($item->status ?? 'pending'));
-            $hrisStatus[$status] = ($hrisStatus[$status] ?? 0) + 1;
-        }
-
-        foreach ($lembur as $item) {
-            $status = strtolower((string) ($item->status ?? 'pending'));
-            $hrisStatus[$status] = ($hrisStatus[$status] ?? 0) + 1;
-        }
 
         $completionRanking = $this->buildCompletionRanking($jobDivisi, $completionGroupBy);
         $menuCompletionChart = $this->buildMenuCompletionChart($formOrder);
 
         return view('dashboard', [
             "jobDivisi" => $jobDivisi,
-            "start_date" => $start_date,
-            "end_date" => $end_date,
             "formOrder" => $formOrder,
             "formOrderGroup" => $formOrder->groupBy("kategori"),
             "groupBy" => $groupBy,
             "completionGroupBy" => $completionGroupBy,
             "summary" => $summary,
-            "trendChart" => [
-                'categories' => array_values(array_column($trendBuckets, 'label')),
-                'pendapatan' => array_values(array_column($trendBuckets, 'pendapatan')),
-                'profit' => array_values(array_column($trendBuckets, 'profit')),
-                'selesai' => array_values(array_column($trendBuckets, 'selesai')),
-                'belum_selesai' => array_values(array_column($trendBuckets, 'belum_selesai')),
-                'pending' => array_values(array_column($trendBuckets, 'pending')),
-                'freeze' => array_values(array_column($trendBuckets, 'freeze')),
-            ],
-            "hrisChart" => [
-                'categories' => ['Cuti', 'Lembur'],
-                'totals' => [$cuti->count(), $lembur->count()],
-                'status' => [
-                    $hrisStatus['pending'] ?? 0,
-                    $hrisStatus['approved'] ?? 0,
-                    $hrisStatus['rejected'] ?? 0,
-                ],
-            ],
+            "filter_month" => $filterMonth,
             "completionChart" => $completionRanking,
             "menuCompletionChart" => $menuCompletionChart,
         ]);
-    }
-
-    private function initializeBuckets(Carbon $startDate, Carbon $endDate, string $groupBy): array
-    {
-        $buckets = [];
-        $cursor = $startDate->copy();
-
-        while ($cursor->lte($endDate)) {
-            $key = $this->bucketKey($cursor, $groupBy);
-
-            $buckets[$key] = [
-                'label' => $this->bucketLabel($cursor, $groupBy),
-                'pendapatan' => 0,
-                'profit' => 0,
-                'selesai' => 0,
-                'belum_selesai' => 0,
-                'pending' => 0,
-                'freeze' => 0,
-            ];
-
-            $cursor = match ($groupBy) {
-                'week' => $cursor->copy()->addWeek()->startOfWeek(),
-                'month' => $cursor->copy()->addMonth()->startOfMonth(),
-                default => $cursor->copy()->addDay()->startOfDay(),
-            };
-        }
-
-        return $buckets;
-    }
-
-    private function bucketKey(Carbon $date, string $groupBy): string
-    {
-        return match ($groupBy) {
-            'week' => $date->copy()->startOfWeek()->format('Y-m-d'),
-            'month' => $date->format('Y-m'),
-            default => $date->format('Y-m-d'),
-        };
-    }
-
-    private function bucketLabel(Carbon $date, string $groupBy): string
-    {
-        return match ($groupBy) {
-            'week' => 'Minggu ' . $date->copy()->startOfWeek()->format('d M'),
-            'month' => $date->translatedFormat('M Y'),
-            default => $date->translatedFormat('d M'),
-        };
     }
 
     private function buildCompletionRanking(Collection $jobDivisi, string $completionGroupBy): array
@@ -219,7 +136,7 @@ class DashboardController extends Controller
         }
 
         $ranking = collect($ranking)
-            ->sortByDesc(fn ($item) => $item['selesai'] + $item['belum_selesai'] + $item['pending'] + $item['freeze'])
+            ->sortByDesc(fn($item) => $item['selesai'] + $item['belum_selesai'] + $item['pending'] + $item['freeze'])
             ->take(10)
             ->values();
 

@@ -69,7 +69,8 @@ class FreezeController extends Controller
 
             DB::commit();
 
-            return redirect()->route("berkas-bermasalah.freeze.index")->with("success", "Berhasil simpan data");
+            return redirect()->back()->with('success', 'Berhasil simpan data');
+            // dd($freezeData);
         } catch (Exception $th) {
             DB::rollBack();
             // dd($th);

@@ -1,5 +1,5 @@
 <div class="my-3 d-flex justify-content-end gap-3">
-    @if (!in_array($jobDivisi->status, ['Pra Akad', 'Batal Akad', 'Selesai']))
+    @if (!in_array($jobDivisi->status, ['Pra Akad', 'Batal Akad', 'Selesai','Freeze']))
         <span class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalSelesaiAkad">
             Selesai
         </span>
@@ -9,7 +9,7 @@
             Akad
         </div>
     @endif
-    @if (!$jobDivisi->freeze && $jobDivisi->status !== 'Selesai')
+    @if ($jobDivisi->status !== 'Selesai')
         <div class="btn btn-outline-warning " data-bs-toggle="modal" data-bs-target="#modalFreeze">
             Freeze (Lock Data)
         </div>
