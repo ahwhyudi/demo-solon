@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         //     "password" => Hash::make("TeknikHijau1"),
         // ]);
 
-        $this->call(RolePermissionSeeder::class);
+        // $this->call(RolePermissionSeeder::class);
         $this->call([
             ProvinsiSeeder::class,
             KotaSeeder::class,
