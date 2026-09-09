@@ -127,7 +127,7 @@
                 <a href="#legalitas" class="hover:text-brand-gold transition-colors">Profil & Legalitas</a>
                 <a href="#layanan" class="hover:text-brand-gold transition-colors">Layanan</a>
                 <a href="#kontak" class="hover:text-brand-gold transition-colors">Akses</a>
-                <a href="/login" class="hover:text-brand-gold transition-colors">Login</a>
+                <a href="{{ route('login') }}" class="hover:text-brand-gold transition-colors">Login</a>
             </div>
 
             <button class="md:hidden p-2 text-brand-black" id="mobile-menu-btn">
@@ -147,7 +147,7 @@
                 <a href="#profil" class="block py-2 border-b border-gray-100 hover:text-brand-gold">Profil Pejabat</a>
                 <a href="#layanan" class="block py-2 border-b border-gray-100 hover:text-brand-gold">Layanan</a>
                 <a href="#kontak" class="block py-2 hover:text-brand-gold">Akses</a>
-                <a href="/login" class="block py-2 hover:text-brand-gold">Login</a>
+                <a href="{{ route('login') }}" class="block py-2 hover:text-brand-gold">Login</a>
             </div>
         </div>
     </nav>

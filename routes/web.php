@@ -54,14 +54,20 @@ use App\Http\Controllers\Setting\WaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get("/", function () {
-    $publicKey = file_get_contents(storage_path('app/keys/public.pem'));
-    return view("pages.login", compact('publicKey'));
-})->middleware("guest")->name("login");
+use Illuminate\Support\Facades\File;
 
-Route::get("login", function () {
-    return redirect()->route('login');
+// 1. Halaman Utama / Landing Page
+Route::get('/', function () {
+    return view('frontend.index'); // atau view landing page Anda
 });
+
+// 2. Halaman Login yang Sebenarnya
+Route::get('/login', function () {
+    $keyPath = storage_path('app/keys/public.pem');
+    $publicKey = File::exists($keyPath) ? File::get($keyPath) : null;
+
+    return view('pages.login', compact('publicKey'));
+})->middleware('guest')->name('login');
 
 // Route proses login & logout
 Route::post("proses-login", [AuthController::class, "prosesLogin"])->name("prosesLogin");
