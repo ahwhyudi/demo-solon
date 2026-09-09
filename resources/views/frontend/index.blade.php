@@ -120,14 +120,14 @@
             <div class="font-official text-sm md:text-base font-bold tracking-widest uppercase flex items-center gap-3">
                 <span class="text-brand-black">Kantor Notaris & PPAT</span>
                 <span class="text-brand-gold hidden md:inline">|</span>
-                <span class="hidden md:inline text-brand-black">DEBRA T.C. SCHRAM, SH. hahahahahah</span>
+                <span class="hidden md:inline text-brand-black">DEBRA T.C. SCHRAM, SH.</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-semibold tracking-wide uppercase">
                 <a href="#beranda" class="hover:text-brand-gold transition-colors">Beranda</a>
                 <a href="#legalitas" class="hover:text-brand-gold transition-colors">Profil & Legalitas</a>
                 <a href="#layanan" class="hover:text-brand-gold transition-colors">Layanan</a>
                 <a href="#kontak" class="hover:text-brand-gold transition-colors">Akses</a>
-                <a href="/login" class="hover:text-brand-gold transition-colors">Login</a>
+                <a href="{{ route('login') }}" class="hover:text-brand-gold transition-colors">Login</a>
             </div>
 
             <button class="md:hidden p-2 text-brand-black" id="mobile-menu-btn">
