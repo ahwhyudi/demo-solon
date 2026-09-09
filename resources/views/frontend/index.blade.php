@@ -120,7 +120,7 @@
             <div class="font-official text-sm md:text-base font-bold tracking-widest uppercase flex items-center gap-3">
                 <span class="text-brand-black">Kantor Notaris & PPAT</span>
                 <span class="text-brand-gold hidden md:inline">|</span>
-                <span class="hidden md:inline text-brand-black">DEBRA T.C. SCHRAM, SH.</span>
+                <span class="hidden md:inline text-brand-black">DEBRA T.C. SCHRAM, SH. hahahahahah</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-semibold tracking-wide uppercase">
                 <a href="#beranda" class="hover:text-brand-gold transition-colors">Beranda</a>
