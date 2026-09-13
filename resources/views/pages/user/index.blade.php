@@ -18,6 +18,9 @@
                                 Nama
                             </th>
                             <th>
+                                Username
+                            </th>
+                            <th>
                                 Email
                             </th>
                             <th>
@@ -34,6 +37,10 @@
                             <tr>
                                 <td>
                                     {{ $item->name }}
+                                </td>
+                                <td>
+                                    {{ $item->username }}
+                                    {{-- {{ dd($item) }} --}}
                                 </td>
                                 <td>
                                     {{ $item->email }}

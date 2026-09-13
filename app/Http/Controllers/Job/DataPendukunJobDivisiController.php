@@ -91,14 +91,27 @@ class DataPendukunJobDivisiController extends Controller
             ];
         }
 
+        // if (in_array("debitur", $dataPendukung) && $request->has("debitur")) {
+        //     $validasiRules = [
+        //         ...$validasiRules,
+        //         "debitur" => "required|array|min:1",
+        //         "debitur.*.nama_lengkap" => "required|string",
+        //         "debitur.*.phone" => "required",
+        //         // "debitur.*.file" => "required",
+        //         "debitur.*.email" => "required",
+        //     ];
+        // }
         if (in_array("debitur", $dataPendukung) && $request->has("debitur")) {
             $validasiRules = [
                 ...$validasiRules,
                 "debitur" => "required|array|min:1",
                 "debitur.*.nama_lengkap" => "required|string",
+                "debitur.*.nik" => "required|numeric",
+                "debitur.*.tempat_lahir" => "required|string",
+                "debitur.*.tanggal_lahir" => "required|date",
+                "debitur.*.alamat_lengkap" => "required|string",
                 "debitur.*.phone" => "required",
-                // "debitur.*.file" => "required",
-                "debitur.*.email" => "required",
+                "debitur.*.email" => "required|email",
             ];
         }
 
@@ -224,20 +237,91 @@ class DataPendukunJobDivisiController extends Controller
         }
     }
 
+    // public function handelInsertDebitur(Request $request, $jobDivisi)
+    // {
+    //     // Kita simpan debiturnya satu per satu supaya dapet ID-nya untuk relasi file
+    //     foreach ($request->debitur as $item) {
+    //         $debitur = Debitur::create([
+    //             "job_divisi_id" => $jobDivisi->id,
+    //             "nama" => $item["nama_lengkap"],
+    //             "nomor_telepon" => $item["phone"],
+    //             "email" => $item["email"],
+    //             "created_at" => now(),
+    //             "updated_at" => now(),
+    //         ]);
+
+    //         // Cek kalau ada upload file (bisa multiple)
+    //         if (isset($item["file"]) && is_array($item["file"])) {
+    //             foreach ($item["file"] as $file) {
+    //                 $path = $file->store("debitur", 'public');
+    //                 $debitur->files()->create([
+    //                     'file_path' => $path,
+    //                     'file_name' => $file->getClientOriginalName(),
+    //                 ]);
+    //             }
+    //         }
+    //     }
+    // }
+
+    public function editDebitur($id)
+    {
+        // Eager load relasi files
+        $debitur = Debitur::with('files')->findOrFail($id);
+        $jobDivisi = JobDivisi::findOrFail($debitur->job_divisi_id);
+
+        return view('pages.Job.Divisi.edit.edit_debitur', compact('debitur', 'jobDivisi'));
+    }
+
+    // public function updateDebitur(Request $request)
+    // {
+    //     $debitur = Debitur::findOrFail($request->id);
+
+    //     $request->validate([
+    //         'nama_lengkap' => 'required',
+    //         'phone' => 'required',
+    //         'email' => 'required|email',
+    //         'files.*' => 'nullable|file|max:10240', // Maksimal 10MB per file
+    //     ]);
+
+    //     $debitur->update([
+    //         'nama' => $request->nama_lengkap,
+    //         'nomor_telepon' => $request->phone,
+    //         'email' => $request->email,
+    //         'updated_at' => now(),
+    //     ]);
+
+    //     // Kalau ada file baru yang diupload pas edit, tambahkan ke relasi (tanpa hapus yang lama)
+    //     if ($request->hasFile('files')) {
+    //         foreach ($request->file('files') as $file) {
+    //             $path = $file->store('debitur', 'public');
+    //             $debitur->files()->create([
+    //                 'file_path' => $path,
+    //                 'file_name' => $file->getClientOriginalName(),
+    //             ]);
+    //         }
+    //     }
+
+    //     return redirect(
+    //         route('job.divisi.show', $debitur->job_divisi_id) . '#tabs-data-pendukung'
+    //     )->with('success', 'Data debitur dan lampiran berhasil diperbarui');
+    // }
+
     public function handelInsertDebitur(Request $request, $jobDivisi)
     {
-        // Kita simpan debiturnya satu per satu supaya dapet ID-nya untuk relasi file
         foreach ($request->debitur as $item) {
             $debitur = Debitur::create([
                 "job_divisi_id" => $jobDivisi->id,
                 "nama" => $item["nama_lengkap"],
+                "nik" => $item["nik"],
+                "tempat_lahir" => $item["tempat_lahir"],
+                "tanggal_lahir" => $item["tanggal_lahir"],
+                "alamat_lengkap" => $item["alamat_lengkap"],
                 "nomor_telepon" => $item["phone"],
                 "email" => $item["email"],
                 "created_at" => now(),
                 "updated_at" => now(),
             ]);
 
-            // Cek kalau ada upload file (bisa multiple)
             if (isset($item["file"]) && is_array($item["file"])) {
                 foreach ($item["file"] as $file) {
                     $path = $file->store("debitur", 'public');
@@ -250,34 +334,33 @@ class DataPendukunJobDivisiController extends Controller
         }
     }
 
-    public function editDebitur($id)
-    {
-        // Eager load relasi files
-        $debitur = Debitur::with('files')->findOrFail($id);
-        $jobDivisi = JobDivisi::findOrFail($debitur->job_divisi_id);
-
-        return view('pages.Job.Divisi.edit.edit_debitur', compact('debitur', 'jobDivisi'));
-    }
-
+    // Method Update Debitur Single Item
     public function updateDebitur(Request $request)
     {
         $debitur = Debitur::findOrFail($request->id);
 
         $request->validate([
-            'nama_lengkap' => 'required',
+            'nama_lengkap' => 'required|string',
+            'nik' => 'required|numeric',
+            'tempat_lahir' => 'required|string',
+            'tanggal_lahir' => 'required|date',
+            'alamat_lengkap' => 'required|string',
             'phone' => 'required',
             'email' => 'required|email',
-            'files.*' => 'nullable|file|max:10240', // Maksimal 10MB per file
+            'files.*' => 'nullable|file|max:10240',
         ]);
 
         $debitur->update([
             'nama' => $request->nama_lengkap,
+            'nik' => $request->nik,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'alamat_lengkap' => $request->alamat_lengkap,
             'nomor_telepon' => $request->phone,
             'email' => $request->email,
             'updated_at' => now(),
         ]);
 
-        // Kalau ada file baru yang diupload pas edit, tambahkan ke relasi (tanpa hapus yang lama)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('debitur', 'public');

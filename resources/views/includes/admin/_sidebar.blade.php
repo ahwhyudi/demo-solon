@@ -515,12 +515,14 @@
                             </span>
                         </a>
                         <div class="dropdown-menu {{ request()->is('akses*') ? 'show' : '' }}">
-                            @if ((int) auth()->user()->id === 1)
-                                <a href="{{ route('akses.role.index') }}"
-                                    class="dropdown-item {{ request()->is('akses/role*') ? 'active' : '' }}">
-                                    Role & Permission
-                                </a>
-                            @endif
+                            @can('akses/role/list')
+                                {{-- @if ((int) auth()->user()->id === 1) --}}
+                                    <a href="{{ route('akses.role.index') }}"
+                                        class="dropdown-item {{ request()->is('akses/role*') ? 'active' : '' }}">
+                                        Role & Permission
+                                    </a>
+                                {{-- @endif --}}
+                            @endcan
                             @can('akses/user/list')
                                 <a href="{{ route('akses.user.index') }}"
                                     class="dropdown-item {{ request()->is('finance/job-divisi') ? 'active' : '' }}">

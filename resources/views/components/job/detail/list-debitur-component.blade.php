@@ -26,10 +26,11 @@
                         <thead
                             class="bg-light bg-opacity-50 text-secondary small fw-bold border-bottom border-light-subtle">
                             <tr>
-                                <th class="py-3 ps-4" style="width: 25%;">NAMA LENGKAP</th>
-                                <th class="py-3" style="width: 25%;">KONTAK</th>
-                                <th class="py-3" style="width: 35%;">LAMPIRAN DOKUMEN</th>
-                                <th class="py-3 text-end pe-4" style="width: 15%;">AKSI</th>
+                                <th class="py-3 ps-4" style="width: 20%;">DEBITUR & NIK</th>
+                                <th class="py-3" style="width: 22%;">KONTAK & TTL</th>
+                                <th class="py-3" style="width: 20%;">ALAMAT LENGKAP</th>
+                                <th class="py-3" style="width: 28%;">LAMPIRAN DOKUMEN</th>
+                                <th class="py-3 text-end pe-4" style="width: 10%;">AKSI</th>
                             </tr>
                         </thead>
                         <tbody class="border-top-0">
@@ -37,6 +38,9 @@
                                 <tr>
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark">{{ $debitur->nama }}</div>
+                                        <div class="small text-muted mb-1">
+                                            <i class="bi bi-card-heading me-1"></i>NIK: {{ $debitur->nik ?? '-' }}
+                                        </div>
                                         <small class="text-muted" style="font-size: 0.75rem;">Ditambahkan
                                             {{ $debitur->created_at ? $debitur->created_at->format('d/m/Y') : '-' }}</small>
                                     </td>
@@ -45,11 +49,21 @@
                                             <i
                                                 class="bi bi-telephone text-muted me-2"></i>{{ $debitur->nomor_telepon ?? '-' }}
                                         </div>
-                                        <div class="d-flex align-items-center small text-muted">
+                                        <div class="d-flex align-items-center small text-muted mb-1">
                                             <i class="bi bi-envelope text-muted me-2"></i>{{ $debitur->email ?? '-' }}
                                         </div>
+                                        <div class="d-flex align-items-center small text-muted">
+                                            <i class="bi bi-calendar-event text-muted me-2"></i>
+                                            {{ $debitur->tempat_lahir ?? '-' }},
+                                            {{ $debitur->tanggal_lahir ? \Carbon\Carbon::parse($debitur->tanggal_lahir)->format('d/m/Y') : '-' }}
+                                        </div>
                                     </td>
-                                    <td style="width: 45%;">
+                                    <td>
+                                        <div class="small text-dark text-wrap" style="max-width: 220px;">
+                                            {{ $debitur->alamat_lengkap ?? '-' }}
+                                        </div>
+                                    </td>
+                                    <td>
                                         @if ($debitur->files && $debitur->files->count() > 0)
                                             <!-- Menampilkan dokumen sejajar 2 kolom -->
                                             <div class="row g-1" style="max-width: 480px;">
@@ -59,7 +73,6 @@
                                                             class="d-flex align-items-center justify-content-between p-2 rounded-2 bg-white border border-light-subtle text-decoration-none shadow-sm h-100 transition-hover"
                                                             title="Buka file: {{ $f->file_name }}">
                                                             <div class="d-flex align-items-center overflow-hidden me-1">
-                                                                <!-- Sentuhan Warna Folder (Amber/Warning Tint) -->
                                                                 <div class="bg-warning bg-opacity-10 p-1 rounded me-2 border border-warning-subtle d-flex align-items-center justify-content-center flex-shrink-0"
                                                                     style="width: 24px; height: 24px;">
                                                                     <i class="bi bi-file-earmark-text text-warning"

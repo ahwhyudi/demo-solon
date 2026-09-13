@@ -7,10 +7,16 @@
         
         <div class="body__debitur">
             @php
-                // Ambil old input; jika kosong, buat 1 baris default
-                $oldDebiturs = old('debitur') ?? (session('form_data.debitur') ?? [['nama_lengkap' => '', 'phone' => '', 'email' => '']]);
+                $oldDebiturs = old('debitur') ?? (session('form_data.debitur') ?? [[
+                    'nama_lengkap' => '', 
+                    'nik' => '', 
+                    'tempat_lahir' => '', 
+                    'tanggal_lahir' => '', 
+                    'alamat_lengkap' => '', 
+                    'phone' => '', 
+                    'email' => ''
+                ]]);
 
-                // Tentukan index terakhir untuk JS (agar append lanjut rapi)
                 $lastIndex = is_array($oldDebiturs) ? array_key_last($oldDebiturs) : -1;
                 if ($lastIndex === null) {
                     $lastIndex = -1;
@@ -21,7 +27,7 @@
                 <div class="card shadow-sm border border-light-subtle rounded-3 card_{{ $key }} @if ($key > 0) mt-4 @endif" data-index="{{ $key }}">
                     <div class="card-header bg-light bg-opacity-50 py-3 border-bottom border-light-subtle d-flex justify-content-between align-items-center">
                         <h6 class="mb-0 fw-bold text-dark">
-                            <i class="bi bi-person-lines-fill me-2 text-primary"></i>Form Data Debitur
+                            <i class="bi bi-person-lines-fill me-2 text-primary"></i>Form Data Debitur #{{ $loop->iteration }}
                         </h6>
                         @if ($key > 0)
                             <button type="button" class="btn btn-sm btn-outline-danger border-0 px-2 py-1" onclick="removeDebitur({{ $key }})" title="Hapus Form Ini">
@@ -39,6 +45,18 @@
                                     value="{{ old("debitur.$key.nama_lengkap", $item['nama_lengkap'] ?? '') }}"
                                     placeholder="Masukkan nama lengkap">
                                 @error("debitur.$key.nama_lengkap")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small fw-bold required">NIK</label>
+                                <input type="text"
+                                    class="form-control @error("debitur.$key.nik") is-invalid @enderror"
+                                    name="debitur[{{ $key }}][nik]"
+                                    value="{{ old("debitur.$key.nik", $item['nik'] ?? '') }}"
+                                    placeholder="16 digit NIK">
+                                @error("debitur.$key.nik")
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -67,11 +85,45 @@
                                 @enderror
                             </div>
 
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small fw-bold required">TEMPAT LAHIR</label>
+                                <input type="text"
+                                    class="form-control @error("debitur.$key.tempat_lahir") is-invalid @enderror"
+                                    name="debitur[{{ $key }}][tempat_lahir]"
+                                    value="{{ old("debitur.$key.tempat_lahir", $item['tempat_lahir'] ?? '') }}"
+                                    placeholder="Kota Kelahiran">
+                                @error("debitur.$key.tempat_lahir")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small fw-bold required">TANGGAL LAHIR</label>
+                                <input type="date"
+                                    class="form-control @error("debitur.$key.tanggal_lahir") is-invalid @enderror"
+                                    name="debitur[{{ $key }}][tanggal_lahir]"
+                                    value="{{ old("debitur.$key.tanggal_lahir", $item['tanggal_lahir'] ?? '') }}">
+                                @error("debitur.$key.tanggal_lahir")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-secondary small fw-bold required">ALAMAT LENGKAP</label>
+                                <textarea
+                                    class="form-control @error("debitur.$key.alamat_lengkap") is-invalid @enderror"
+                                    name="debitur[{{ $key }}][alamat_lengkap]"
+                                    rows="2"
+                                    placeholder="Alamat sesuai KTP">{{ old("debitur.$key.alamat_lengkap", $item['alamat_lengkap'] ?? '') }}</textarea>
+                                @error("debitur.$key.alamat_lengkap")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="col-12">
                                 <div class="p-3 border border-2 border-dashed border-secondary border-opacity-25 rounded-3 bg-light bg-opacity-25">
                                     <label class="form-label text-dark small fw-bold mb-1">DOKUMEN LAMPIRAN</label>
                                     <p class="text-muted small mb-2" style="font-size: 0.75rem;">Anda dapat memilih beberapa file sekaligus dengan menahan tombol Ctrl / Shift.</p>
-                                    <!-- Perbaikan: langsung pakai file[] dan multiple -->
                                     <input type="file"
                                         class="form-control bg-white @error("debitur.$key.file.*") is-invalid @enderror"
                                         name="debitur[{{ $key }}][file][]" multiple>
@@ -86,7 +138,6 @@
             @endforeach
         </div>
 
-        <!-- Tombol Tambah Lebih Elegan -->
         <div class="mt-4">
             <button type="button" class="btn btn-outline-primary w-100 py-3 border-2 border-dashed fw-bold rounded-3 add_debitur shadow-sm transition-hover" style="border-style: dashed !important;">
                 <i class="bi bi-plus-circle me-1"></i> Tambah Form Debitur Lainnya
@@ -102,7 +153,6 @@
         @endif
     </form>
 
-    <!-- Modal Konfirmasi Hapus Form Debitur -->
     <div class="modal fade" id="modalDeleteCard" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow">
@@ -138,7 +188,6 @@
                     let i_debitur = {{ $lastIndex }};
                     let cardIndexToRemove = null;
 
-                    // Fungsi append dengan UI baru yang selaras
                     $(".add_debitur").on("click", function() {
                         i_debitur++;
                         let i = i_debitur;
@@ -148,7 +197,7 @@
                             <div class="card shadow-sm border border-light-subtle rounded-3 card_${i} mt-4" data-index="${i}" style="display:none;">
                                 <div class="card-header bg-light bg-opacity-50 py-3 border-bottom border-light-subtle d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0 fw-bold text-dark">
-                                        <i class="bi bi-person-lines-fill me-2 text-primary"></i>Form Data Debitur 
+                                        <i class="bi bi-person-lines-fill me-2 text-primary"></i>Form Data Debitur #${cardNumber}
                                     </h6>
                                     <button type="button" class="btn btn-sm btn-outline-danger border-0 px-2 py-1" onclick="removeDebitur(${i})" title="Hapus Form Ini">
                                         <i class="bi bi-trash"></i> Hapus
@@ -162,6 +211,11 @@
                                         </div>
 
                                         <div class="col-md-4">
+                                            <label class="form-label text-secondary small fw-bold required">NIK</label>
+                                            <input type="text" class="form-control" name="debitur[${i}][nik]" placeholder="16 digit NIK">
+                                        </div>
+
+                                        <div class="col-md-4">
                                             <label class="form-label text-secondary small fw-bold required">NOMOR TELEPON</label>
                                             <input type="text" class="form-control" name="debitur[${i}][phone]" placeholder="Contoh: 081234567890">
                                         </div>
@@ -169,6 +223,21 @@
                                         <div class="col-md-4">
                                             <label class="form-label text-secondary small fw-bold required">EMAIL</label>
                                             <input type="email" class="form-control" name="debitur[${i}][email]" placeholder="email@domain.com">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label text-secondary small fw-bold required">TEMPAT LAHIR</label>
+                                            <input type="text" class="form-control" name="debitur[${i}][tempat_lahir]" placeholder="Kota Kelahiran">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label text-secondary small fw-bold required">TANGGAL LAHIR</label>
+                                            <input type="date" class="form-control" name="debitur[${i}][tanggal_lahir]">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label text-secondary small fw-bold required">ALAMAT LENGKAP</label>
+                                            <textarea class="form-control" name="debitur[${i}][alamat_lengkap]" rows="2" placeholder="Alamat sesuai KTP"></textarea>
                                         </div>
 
                                         <div class="col-12">
@@ -183,11 +252,9 @@
                             </div>
                         `);
                         
-                        // Efek muncul halus
                         $(`.card_${i}`).fadeIn(300);
                     });
 
-                    // Hapus menggunakan Modal Bootstrap
                     window.removeDebitur = function(idx) {
                         cardIndexToRemove = idx;
                         let myModal = new bootstrap.Modal(document.getElementById('modalDeleteCard'));
@@ -198,7 +265,6 @@
                         if (cardIndexToRemove !== null) {
                             $(`.body__debitur .card_${cardIndexToRemove}`).fadeOut(300, function() {
                                 $(this).remove();
-                                // Re-numbering judul form setelah ada yang dihapus
                                 $('.body__debitur .card').each(function(index) {
                                     $(this).find('h6').html(`<i class="bi bi-person-lines-fill me-2 text-primary"></i>Form Data Debitur #${index + 1}`);
                                 });
