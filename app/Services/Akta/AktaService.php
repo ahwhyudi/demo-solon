@@ -112,6 +112,7 @@ class AktaService
                 'waarmerking',
                 'surat-keluar',
                 'wasiat',
+                'covernot'
             ])
             ->where('kategori', $tipe)
             ->whereHas("jobDivisi")

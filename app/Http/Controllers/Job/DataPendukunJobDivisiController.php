@@ -413,7 +413,9 @@ class DataPendukunJobDivisiController extends Controller
 
     public function handelInsertBank(Request $request, $jobDivisi)
     {
+
         $formDataBank = collect($request->bank);
+        // dd($formDataBank);
 
         $bank = Bank::whereIn("id", $formDataBank->pluck("bank")->toArray())->get();
 

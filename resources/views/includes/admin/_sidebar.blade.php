@@ -149,22 +149,28 @@
                                 PPAT
                             </a>
                         @endcan
-                        @can('job/legalisasi/list')
-                            <a href="{{ route('job.akta.data.filter', 'legalisasi') }}"
-                                class="dropdown-item {{ request()->is('job/akta/filter-data/legalisasi*') ? 'active' : '' }}">
-                                Legalisasi
-                            </a>
-                        @endcan
                         @can('job/waarmerking/list')
                             <a href="{{ route('job.akta.data.filter', 'waarmerking') }}"
                                 class="dropdown-item {{ request()->is('job/akta/filter-data/waarmerking*') ? 'active' : '' }}">
                                 Waarmerking
                             </a>
                         @endcan
+                        @can('job/covernot/list')
+                            <a href="{{ route('job.akta.data.filter', 'covernot') }}"
+                                class="dropdown-item {{ request()->is('job/akta/filter-data/covernot*') ? 'active' : '' }}">
+                                Covernot
+                            </a>
+                        @endcan
                         @can('job/surat-keluar/list')
                             <a href="{{ route('job.akta.data.filter', 'surat-keluar') }}"
                                 class="dropdown-item {{ request()->is('job/akta/filter-data/surat-keluar*') ? 'active' : '' }}">
                                 Surat Keluar
+                            </a>
+                        @endcan
+                        @can('job/legalisasi/list')
+                            <a href="{{ route('job.akta.data.filter', 'legalisasi') }}"
+                                class="dropdown-item {{ request()->is('job/akta/filter-data/legalisasi*') ? 'active' : '' }}">
+                                Legalisasi
                             </a>
                         @endcan
                         @can('job/wasiat/list')
@@ -448,6 +454,12 @@
                                         Waarmerking
                                     </a>
                                 @endcan
+                                {{-- @can('laporan/covernot/list')
+                                    <a href="#"
+                                        class="dropdown-item {{ request()->is('laporan/nomor-notaris/covernot*') ? 'active' : '' }}">
+                                        Cover Not
+                                    </a>
+                                @endcan --}}
                                 @can('laporan/surat-keluar/list')
                                     <a href="{{ route('laporan.nomor-notaris', 'surat-keluar') }}"
                                         class="dropdown-item {{ request()->is('laporan/nomor-notaris/surat-keluar*') ? 'active' : '' }}">
@@ -517,10 +529,10 @@
                         <div class="dropdown-menu {{ request()->is('akses*') ? 'show' : '' }}">
                             @can('akses/role/list')
                                 {{-- @if ((int) auth()->user()->id === 1) --}}
-                                    <a href="{{ route('akses.role.index') }}"
-                                        class="dropdown-item {{ request()->is('akses/role*') ? 'active' : '' }}">
-                                        Role & Permission
-                                    </a>
+                                <a href="{{ route('akses.role.index') }}"
+                                    class="dropdown-item {{ request()->is('akses/role*') ? 'active' : '' }}">
+                                    Role & Permission
+                                </a>
                                 {{-- @endif --}}
                             @endcan
                             @can('akses/user/list')

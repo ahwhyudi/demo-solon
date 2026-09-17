@@ -41,7 +41,18 @@ class PekerjaanController extends Controller
             ->with('kota')
             ->get();
 
-        $kategori = ['operasional' => 'Operasional', 'pajak' => 'Pajak', 'notaris' => 'Notaris', 'ppat' => 'PPAT', 'legalisasi' => 'Legalisasi', "pnbp_voucher" => "PNBP/ Voucher", "waarmerking" => "Waarmerking", "surat-keluar" => "Surat Keluar", "wasiat" => "Wasiat"];
+        $kategori = [
+            'operasional' => 'Operasional', 
+            'pajak' => 'Pajak', 
+            'notaris' => 'Notaris', 
+            'ppat' => 'PPAT', 
+            'legalisasi' => 'Legalisasi', 
+            "pnbp_voucher" => "PNBP/ Voucher", 
+            "waarmerking" => "Waarmerking", 
+            "surat-keluar" => "Surat Keluar", 
+            "wasiat" => "Wasiat", 
+            'covernot' => 'Covernot'
+            ];
 
         return view("pages.MasterData.Pekerjaan.create", compact("provinsi", "kategori"));
     }
@@ -160,7 +171,8 @@ class PekerjaanController extends Controller
             "pnbp_voucher" => "PNBP/ Voucher",
             "waarmerking" => "Waarmerking",
             "surat-keluar" => "Surat Keluar",
-            "wasiat" => "Wasiat"
+            "wasiat" => "Wasiat",
+            'covernot' => 'Covernot'
         ];
 
         return view(
@@ -297,7 +309,8 @@ class PekerjaanController extends Controller
                 'pnbp_voucher',
                 'waarmerking',
                 'surat-keluar',
-                'wasiat'
+                'wasiat',
+                'covernot'
             ])],
         ];
 

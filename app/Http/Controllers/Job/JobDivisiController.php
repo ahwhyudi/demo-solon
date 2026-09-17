@@ -19,6 +19,9 @@ use App\Models\StatusDetail;
 use App\Models\User;
 use App\Services\FileStoreServis;
 use App\Services\Job\JobDivisiIndexServis;
+use App\Services\MasterData\BankService;
+use App\Services\MasterData\BrokerService;
+use App\Services\MasterData\DeveloperService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -34,7 +37,10 @@ class JobDivisiController extends Controller
 
     public function __construct(
         protected FileStoreServis $fileStoreServis,
-        protected JobDivisiIndexServis $jobDivisiIndexServis
+        protected JobDivisiIndexServis $jobDivisiIndexServis,
+        protected BankService $bankService,
+        protected DeveloperService $developerService,
+        protected BrokerService $brokerService,
     ) {}
 
     /**
@@ -340,12 +346,15 @@ class JobDivisiController extends Controller
 
         $myRoles = Auth::user()->roles->first()->id;
 
-        $bank = Cache::remember('master_bank', 86400, function () {
-            return Bank::orderBy("nama")->with("kepalaLegal", "legal", "kepalaMarketing", "marketing")->get();
-        });
+        // $bank = Cache::remember('master_bank', 86400, function () {
+        //     return Bank::orderBy("nama")->with("kepalaLegal", "legal", "kepalaMarketing", "marketing")->get();
+        // });
 
-        $developer = Cache::remember('master_developer', 86400, fn() => Developer::with("marketing", "legal")->get());
-        $broker = Cache::remember('master_broker', 86400, fn() => Broker::with("marketing")->get());
+        // $developer = Cache::remember('master_developer', 86400, fn() => Developer::with("marketing", "legal")->get());
+        // $broker = Cache::remember('master_broker', 86400, fn() => Broker::with("marketing")->get());
+        $bank = $this->bankService->getForForm();
+        $developer = $this->developerService->getForForm();
+        $broker = $this->brokerService->getForForm();
 
         $fileAkad = $jobDivisi->fileJob->where("tipe", "foto akad")->first();
         $fileSertifikat = $jobDivisi->fileJob->where("tipe", "sertifikat")->first();

@@ -49,7 +49,7 @@
                     <tbody>
                         @forelse ($items as $index => $item)
                             <tr>
-
+                                {{-- {{ dd($items) }} --}}
                                 <td>
                                     {{ $index + 1 }}
                                 </td>

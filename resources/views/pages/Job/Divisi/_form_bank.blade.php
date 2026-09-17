@@ -45,7 +45,7 @@
                         <div class="card-body pt-3">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label text-secondary small fw-bold required">NAMA BANK</label>
+                                    <label class="form-label text-secondary small fw-bold required">NAMA BANK</label>                                
                                     <select name="bank[{{ $idx }}][bank]"
                                         class="form-select select2 select_bank @error("bank.$idx.bank") is-invalid @enderror" data-placeholder="Pilih Bank"
                                         data-idx="{{ $idx }}">
@@ -196,6 +196,7 @@
                     });
 
                     const list_bank = @json($bank);
+                    // console.log(@json($bank));
 
                     $(document).on("change", ".select_bank", function() {
                         const idx = $(this).attr('data-idx');

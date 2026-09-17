@@ -310,19 +310,86 @@ class BankController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function destroy(string $id)
+    // {
+    //     $item = Bank::find($id);
+
+    //     if (!$item) {
+    //         Session::flash('error', 'Data Tidak Ditemukan');
+    //         return to_route('master-data.bank.index');
+    //     }
+
+    //     $item->delete();
+
+    //     Session::flash('success', 'Data Berhasil Dihapus');
+
+    //     return to_route('master-data.bank.index');
+    // }
+
+    // public function destroy(string $id)
+    // {
+    //     $bank = Bank::find($id);
+
+    //     if (!$bank) {
+    //         return to_route('master-data.bank.index')
+    //             ->with('error', 'Data Bank Tidak Ditemukan');
+    //     }
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Hapus data yang berelasi dengan Bank
+    //         BankKepalaLegal::where('bank_id', $bank->id)->delete();
+    //         BankLegal::where('bank_id', $bank->id)->delete();
+    //         BankKepalaMarketing::where('bank_id', $bank->id)->delete();
+    //         BankMarketing::where('bank_id', $bank->id)->delete();
+
+    //         // Hapus Bank secara permanen
+    //         $bank->forceDelete();
+
+    //         DB::commit();
+
+    //         return to_route('master-data.bank.index')
+    //             ->with('success', 'Data Bank dan seluruh data terkait berhasil dihapus');
+    //     } catch (Exception $e) {
+
+    //         DB::rollBack();
+
+    //         return to_route('master-data.bank.index')
+    //             ->with(
+    //                 'error',
+    //                 'Gagal menghapus data Bank: ' . $e->getMessage()
+    //             );
+    //     }
+    // }
     public function destroy(string $id)
-    {
-        $item = Bank::find($id);
+{
+    $bank = Bank::find($id);
 
-        if (!$item) {
-            Session::flash('error', 'Data Tidak Ditemukan');
-            return to_route('master-data.bank.index');
-        }
-
-        $item->delete();
-
-        Session::flash('success', 'Data Berhasil Dihapus');
-
-        return to_route('master-data.bank.index');
+    if (!$bank) {
+        return to_route('master-data.bank.index')
+            ->with('error', 'Data Bank Tidak Ditemukan');
     }
+
+    DB::beginTransaction();
+
+    try {
+        BankKepalaLegal::where('bank_id', $bank->id)->delete();
+        BankLegal::where('bank_id', $bank->id)->delete();
+        BankKepalaMarketing::where('bank_id', $bank->id)->delete();
+        BankMarketing::where('bank_id', $bank->id)->delete();
+
+        $bank->delete();
+
+        DB::commit();
+
+        return to_route('master-data.bank.index')
+            ->with('success', 'Data Bank dan seluruh data terkait berhasil dihapus');
+    } catch (Exception $e) {
+        DB::rollBack();
+
+        return to_route('master-data.bank.index')
+            ->with('error', 'Gagal menghapus data Bank: ' . $e->getMessage());
+    }
+}
 }
